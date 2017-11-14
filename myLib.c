@@ -11,12 +11,14 @@ unsigned short *videoBuffer = (unsigned short *)0x6000000;
 
 Vehicle lane[6][6];
 
-void setPosition(int row, int col, int y) {
+void setPosition(int row, int col, int x, int y) {
     //lane[row][col].y = yPosition;
     // if (lane[row][col].x > SCREEN_HEIGHT || lane[row][col].x < 0) {
     //     lane[row][col].x = 0;
     // }
+    lane[row][col].x = x;    
     lane[row][col].y = y;
+    lane[row][col].oldX = x;
 }
 
 // void setFrogPosition(Frog* frog, int x, int y) {
@@ -58,14 +60,14 @@ void initLane() {  //initialises the lane array
     int numLanes, numCarsPerLane;
     numLanes = sizeof(lane) / sizeof(lane[0]);
     numCarsPerLane = sizeof(lane[0]) / sizeof(lane[0][0]);
-    // int offset = 20;
-    // int allLanesHeight = SCREEN_HEIGHT - 2 * BAR_HEIGHT - offset;
-    // int oneLaneHeight = allLanesHeight / numLanes;
-    // int carSpace = SCREEN_WIDTH / numCarsPerLane;
+    int offset = 20;
+    int allLanesHeight = SCREEN_HEIGHT - 2 * BAR_HEIGHT - offset;
+    int oneLaneHeight = allLanesHeight / numLanes;
+    int carSpace = SCREEN_WIDTH / numCarsPerLane;
     for (int i = 0; i < numLanes; i++) {
         int speed = rand() % 2;
         for (int j = 0; j < numCarsPerLane; j++) {
-            setPosition(i, j, j * 20);
+            setPosition(i, j, j * carSpace, i * oneLaneHeight + BAR_HEIGHT);
             setSpeed(i, j, speed);
             setDirection(i, i % 2);
         }
@@ -80,10 +82,10 @@ void drawCars() {
         for (int j = 0; j < m; j++) {
             if (lane[i][j].left) {
                 // lane[i][j].oldX = lane[i][j].x;
-                lane[i][j].oldY += (lane[i][j].y - lane[i][j].speed - 5);
+                lane[i][j].oldX += (lane[i][j].x - lane[i][j].speed - 5);
             } else {
                 // lane[i][j].oldX = lane[i][j].x;
-                lane[i][j].oldY += (lane[i][j].y + lane[i][j].speed + 5);
+                lane[i][j].oldX += (lane[i][j].x + lane[i][j].speed + 5);
             }
         }
     }
@@ -96,9 +98,9 @@ void updateCarPos() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             if (lane[i][j].left) {
-                drawImage3(lane[i][j].x, lane[i][j].oldY, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
+                drawImage3(lane[i][j].y, lane[i][j].oldX, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
             } else {
-                drawImage3(lane[i][j].x, lane[i][j].oldY, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+                drawImage3(lane[i][j].y, lane[i][j].oldX, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
             }
         }
     }
