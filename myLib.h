@@ -101,6 +101,9 @@ extern const unsigned char fontdata_6x8[12288];
 #define FROGGERS_WIDTH 10
 #define FROGGERS_HEIGHT 10
 
+#define CAR_WIDTH 10
+#define CAR_HEIGHT 10
+
 #define BAR_HEIGHT 10
 
 #define COLOR(r, g, b) (r | (g << 5) | (b << 10))
@@ -242,5 +245,6 @@ void drawFrog(Frog frog);
 void initLane();
 void drawCars();
 void updateCarPos();
+int isCollided(Frog frog);
 
 

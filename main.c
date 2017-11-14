@@ -1,5 +1,3 @@
-// Name: HIEU LE
-
 #include "frogs.h"
 #include "myLib.h"
 #include <stdlib.h>
@@ -33,13 +31,14 @@ int main() {
     // // initial game objects
     // Rect bricks[BRICKSNUM];
     // initBricks(bricks);
-    Frog frogger = createFrog(135, 120, FROGGERS_WIDTH, FROGGERS_HEIGHT, GREEN);
+    Frog frogger = createFrog(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 10, FROGGERS_WIDTH, FROGGERS_HEIGHT, GREEN);
     Frog oldFrogger = frogger;
 
     //int time = 60;
     // Rect box = createRect(120, 100, BOX_WIDTH, BOX_HEIGHT, GREEN);
     // Rect oldBox = box;
 
+    initLane();
     while(1) {
 
         startPressed = 0;
@@ -86,30 +85,31 @@ int main() {
                 // drawRectangle(50, 50, 100, 100, BLUE);
                 
                 // drawRectangle(138, 120, 7, 7, GREEN);
-                drawImage3(135, 120, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
+                drawImage3(frogger.y, frogger.x, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
 
                 memcpy(&oldFrogger, &frogger, sizeof(Frog));
                 oldFrogger.color = WHITE;
 
                 // move the paddle as left or right button is pressed
                 if (KEY_DOWN_NOW(BUTTON_LEFT)) {
-                    setFrogPosition(&frogger, frogger.x, frogger.y - 2);
+                    setFrogPosition(&frogger, frogger.x - 2, frogger.y);
                 }
                 if (KEY_DOWN_NOW(BUTTON_RIGHT)) {   
-                    setFrogPosition(&frogger, frogger.x, frogger.y + 2);
-                }
-                if (KEY_DOWN_NOW(BUTTON_UP)) {
-                    setFrogPosition(&frogger, frogger.x - 2, frogger.y);
-                } 
-                if (KEY_DOWN_NOW(BUTTON_DOWN)) {
                     setFrogPosition(&frogger, frogger.x + 2, frogger.y);
                 }
-
-                initLane();
+                if (KEY_DOWN_NOW(BUTTON_UP)) {
+                    setFrogPosition(&frogger, frogger.x, frogger.y - 2);
+                } 
+                if (KEY_DOWN_NOW(BUTTON_DOWN)) {
+                    setFrogPosition(&frogger, frogger.x, frogger.y + 2);
+                }
+                if (isCollided(frogger)) {
+                    state = GAMEOVER;
+                }
                 fillScreen(0);
                 drawRectangle(0, 0, SCREEN_WIDTH, BAR_HEIGHT, BLUE);
                 drawRectangle(135, 0, SCREEN_WIDTH, BAR_HEIGHT, BLUE);
-                drawImage3(oldFrogger.x, oldFrogger.y, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
+                drawImage3(oldFrogger.y, oldFrogger.x, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
                 drawCars();
                 updateCarPos();
 
@@ -147,14 +147,14 @@ int main() {
                 // }
 
                 // press A to increase the speed
-                while(KEY_DOWN_NOW(BUTTON_START)) {
-                    if (!startPressed) {
-                        startPressed = 1;
-                        // velocity++;
-                        // box.color = RED;
-                        state = GAMEOVER;
-                    }
-                }
+                // while(KEY_DOWN_NOW(BUTTON_START)) {
+                //     if (!startPressed) {
+                //         startPressed = 1;
+                //         // velocity++;
+                //         // box.color = RED;
+                //         state = GAMEOVER;
+                //     }
+                // }
                 break;
         }
 

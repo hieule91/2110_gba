@@ -9,7 +9,7 @@
 
 unsigned short *videoBuffer = (unsigned short *)0x6000000;
 
-Vehicle lane[6][6];
+Vehicle lane[1][1];
 
 void setPosition(int row, int col, int x, int y) {
     //lane[row][col].y = yPosition;
@@ -65,7 +65,10 @@ void initLane() {  //initialises the lane array
     int oneLaneHeight = allLanesHeight / numLanes;
     int carSpace = SCREEN_WIDTH / numCarsPerLane;
     for (int i = 0; i < numLanes; i++) {
-        int speed = rand() % 2;
+        int speed = (rand() % 2 + 1) * 2;
+        if (i % 2 == 1) {
+            speed = -speed;
+        }
         for (int j = 0; j < numCarsPerLane; j++) {
             setPosition(i, j, j * carSpace, i * oneLaneHeight + BAR_HEIGHT);
             setSpeed(i, j, speed);
@@ -75,18 +78,13 @@ void initLane() {  //initialises the lane array
 }
 
 void drawCars() {
-    int m, n;
-    n = sizeof(lane) / sizeof(lane[0]);
-    m = sizeof(lane[0]) / sizeof(lane[0][0]);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (lane[i][j].left) {
-                // lane[i][j].oldX = lane[i][j].x;
-                lane[i][j].oldX += (lane[i][j].x - lane[i][j].speed - 5);
-            } else {
-                // lane[i][j].oldX = lane[i][j].x;
-                lane[i][j].oldX += (lane[i][j].x + lane[i][j].speed + 5);
-            }
+    int numLanes, numCarsPerLane;
+    numLanes = sizeof(lane) / sizeof(lane[0]);
+    numCarsPerLane = sizeof(lane[0]) / sizeof(lane[0][0]);
+    for (int i = 0; i < numLanes; i++) {
+        for (int j = 0; j < numCarsPerLane; j++) {
+            lane[i][j].y += 0;
+            lane[i][j].x = (lane[i][j].x + lane[i][j].speed) % SCREEN_WIDTH;           
         }
     }
 }
@@ -98,13 +96,17 @@ void updateCarPos() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             if (lane[i][j].left) {
-                drawImage3(lane[i][j].y, lane[i][j].oldX, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
+                drawImage3(lane[i][j].y, lane[i][j].x, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
             } else {
-                drawImage3(lane[i][j].y, lane[i][j].oldX, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+                drawImage3(lane[i][j].y, lane[i][j].x, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
             }
         }
     }
 }
+
+
+
+
 // drawImage3(100, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
 // drawImage3(100, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
 // drawImage3(100, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
@@ -125,16 +127,16 @@ Frog createFrog(int x, int y, int width, int height, u16 color) {
 void setFrogPosition(Frog* frog, int x, int y) {
     if (x < 0) {
         frog->x = 0;
-    } else if (x > SCREEN_HEIGHT - 15 - frog->width) {
-        frog->x = SCREEN_HEIGHT - 15 - frog->width;
+    } else if (x > SCREEN_WIDTH - frog->width) {
+        frog->x = SCREEN_WIDTH  - frog->width;
     } else {
         frog->x = x;
     }
 
     if (y < 0) {
         frog->y = 0;
-    } else if (y > SCREEN_WIDTH - frog->height) {
-        frog->y = SCREEN_WIDTH - frog->height;
+    } else if (y > SCREEN_HEIGHT - 15 - frog->height) {
+        frog->y = SCREEN_HEIGHT - 15- frog->height;
     } else {
         frog->y = y;
     }
@@ -183,6 +185,29 @@ void drawImage3(int x, int y, int width, int height, const u16* image) {
         DMA[3].cnt = width | DMA_ON | DMA_DESTINATION_INCREMENT;
     }
 }
+
+int isCollided(Frog frog) {
+    int numLanes, numCarsPerLane;
+    numLanes = sizeof(lane) / sizeof(lane[0]);
+    numCarsPerLane = sizeof(lane[0]) / sizeof(lane[0][0]);
+    for (int laneIdx = 0; laneIdx < numLanes; laneIdx++) {
+        for (int carIdx = 0; carIdx < numCarsPerLane; carIdx++) {
+            Vehicle car = lane[laneIdx][carIdx];
+            if ((frog.x + FROGGER_WIDTH) >= car.x
+                && frog.x <= (car.x + CAR_WIDTH)
+                && (frog.y + FROGGER_HEIGHT) >= car.y 
+                && frog.y <= (car.y + CAR_HEIGHT)) 
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+// void clearScreen(int x, int y, int width, int height) {
+
+// }
 
 // // void fillBackGround(int x, int y, int width, int height)
 
