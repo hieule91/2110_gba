@@ -9,7 +9,7 @@
 
 unsigned short *videoBuffer = (unsigned short *)0x6000000;
 
-Vehicle lane[1][1];
+Vehicle lane[3][1];
 
 void setPosition(int row, int col, int x, int y) {
     //lane[row][col].y = yPosition;
@@ -190,6 +190,7 @@ int isCollided(Frog frog) {
     int numLanes, numCarsPerLane;
     numLanes = sizeof(lane) / sizeof(lane[0]);
     numCarsPerLane = sizeof(lane[0]) / sizeof(lane[0][0]);
+
     for (int laneIdx = 0; laneIdx < numLanes; laneIdx++) {
         for (int carIdx = 0; carIdx < numCarsPerLane; carIdx++) {
             Vehicle car = lane[laneIdx][carIdx];
