@@ -2,77 +2,118 @@
 #include "welcomeScreen.h"
 #include "gameOver.h"
 #include "gamePlay.h"
+#include "rightCar.h"
+#include "leftCar.h"
 #include <stdlib.h>
 
 
 unsigned short *videoBuffer = (unsigned short *)0x6000000;
 
-Vehicle lane[5][1];
+Vehicle lane[6][6];
 
-void initLane() {  //initialises the lane array to zero
-    int i,j;
-    n = sizeof(lane) / sizeof(lane[0]);
-    m = sizeof(lane[0]) / sizeof(lane[0][0]);
-    for(i = 0; i < n; i++) {
-        for(j = 0; j < m; j++) {
-            lane[i][j].pos = 0;
-            lane[i][j].speed = 0;
+void setPosition(int row, int col, int y) {
+    //lane[row][col].y = yPosition;
+    // if (lane[row][col].x > SCREEN_HEIGHT || lane[row][col].x < 0) {
+    //     lane[row][col].x = 0;
+    // }
+    lane[row][col].y = y;
+}
+
+// void setFrogPosition(Frog* frog, int x, int y) {
+//     if (x < 0) {
+//         frog->x = 0;
+//     } else if (x > SCREEN_HEIGHT - 15 - frog->width) {
+//         frog->x = SCREEN_HEIGHT - 15 - frog->width;
+//     } else {
+//         frog->x = x;
+//     }
+
+//     if (y < 0) {
+//         frog->y = 0;
+//     } else if (y > SCREEN_WIDTH - frog->height) {
+//         frog->y = SCREEN_WIDTH - frog->height;
+//     } else {
+//         frog->y = y;
+//     }
+// }
+
+
+void setSpeed(int row, int col, int speed) {
+    lane[row][col].speed = speed;
+}
+
+void setDirection(int row, int left) {
+    int j, m;
+    m = sizeof(lane[row]) / sizeof(lane[row][0]);
+    for (j = 0; j < m; j++) {
+        if (left) {
+            lane[row][j].left = 1;
+        } else {
+            lane[row][j].right = 1;
         }
     }
 }
 
-void shiftLane() {
-    int i,j;
-    n = sizeof(lane) / sizeof(lane[0]);
-    m = sizeof(lane[0]) / sizeof(lane[0][0]);
-    for(i = 0; i < n; i++) {
-        for(j = 0; j < m; j++) {
-            Vehicle vehicle = lane[i][j];
-            vehicle.pos = (vehicle.pos + vehicle.speed) % SCREEN_WIDTH;
+void initLane() {  //initialises the lane array
+    int numLanes, numCarsPerLane;
+    numLanes = sizeof(lane) / sizeof(lane[0]);
+    numCarsPerLane = sizeof(lane[0]) / sizeof(lane[0][0]);
+    // int offset = 20;
+    // int allLanesHeight = SCREEN_HEIGHT - 2 * BAR_HEIGHT - offset;
+    // int oneLaneHeight = allLanesHeight / numLanes;
+    // int carSpace = SCREEN_WIDTH / numCarsPerLane;
+    for (int i = 0; i < numLanes; i++) {
+        int speed = rand() % 2;
+        for (int j = 0; j < numCarsPerLane; j++) {
+            setPosition(i, j, j * 20);
+            setSpeed(i, j, speed);
+            setDirection(i, i % 2);
         }
     }
-
 }
 
-Vehicle createCars(int x, int y, int pos, int speed) {
-    Vehicle vehicle = {x, y, pos, speed};
-    return vehicle;
+void drawCars() {
+    int m, n;
+    n = sizeof(lane) / sizeof(lane[0]);
+    m = sizeof(lane[0]) / sizeof(lane[0][0]);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (lane[i][j].left) {
+                // lane[i][j].oldX = lane[i][j].x;
+                lane[i][j].oldY += (lane[i][j].y - lane[i][j].speed - 5);
+            } else {
+                // lane[i][j].oldX = lane[i][j].x;
+                lane[i][j].oldY += (lane[i][j].y + lane[i][j].speed + 5);
+            }
+        }
+    }
 }
 
+void updateCarPos() {
+    int m, n;
+    n = sizeof(lane) / sizeof(lane[0]);
+    m = sizeof(lane[0]) / sizeof(lane[0][0]);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (lane[i][j].left) {
+                drawImage3(lane[i][j].x, lane[i][j].oldY, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
+            } else {
+                drawImage3(lane[i][j].x, lane[i][j].oldY, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+            }
+        }
+    }
+}
+// drawImage3(100, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+// drawImage3(100, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+// drawImage3(100, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
 
+// drawImage3(115, 12, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
+// drawImage3(115, 125, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
+// drawImage3(115, 215, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
 
-// void initBricks(Rect* bricks) {
-//     u16 colors[4] = {RED, GREEN, BLUE, YELLOW};
-//     for (int row = 0; row < BRICKROWS; row++) {
-//         for (int col = 0; col < BRICKCOLS; col++) {
-//             *(bricks + OFFSET(row, col, BRICKCOLS)) =
-//                 createRect(col * BRICK_WIDTH,
-//                            15 + row * BRICK_HEIGHT,
-//                            BRICK_WIDTH, BRICK_HEIGHT,
-//                            colors[(col * row) % 4]);
-//         }
-//     }
-// }
-
-// void resetGame(Rect* bricks, Rect* paddle, Rect* box) {
-//     for (int i = 0; i < BRICKSNUM; i++) {
-//         (bricks + i)->isRemoved = 0;
-//     }
-
-//     paddle->x = 120;
-//     paddle->y = 140;
-//     box->x = 120;
-//     box->y = 100;
-// }
-
-
-// void drawRectArr(Rect* rectArr, int length) {
-//     for (int i = 0; i < length; i++) {
-//         if (rectArr->isRemoved == 0) {
-//             drawRect(*(rectArr + i));
-//         }
-//     }
-// }
+// drawImage3(90, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+// drawImage3(90, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+// drawImage3(90, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
 
 Frog createFrog(int x, int y, int width, int height, u16 color) {
     Frog frog = {x, y, color, width, height};
@@ -137,7 +178,7 @@ void drawImage3(int x, int y, int width, int height, const u16* image) {
     for (int row = 0; row < height; row++) {
         DMA[3].src = image + row * width;
         DMA[3].dst = videoBuffer + OFFSET(row + x, y, SCREEN_WIDTH);
-        DMA[3].cnt = width | DMA_ON;
+        DMA[3].cnt = width | DMA_ON | DMA_DESTINATION_INCREMENT;
     }
 }
 
@@ -160,6 +201,9 @@ void fillScreen(volatile u16 color)
     REG_DMA3CNT = (240 * 160) | DMA_ON | DMA_DESTINATION_INCREMENT | DMA_SOURCE_FIXED;
 }
 
+void drawBackGround() {
+    drawImage3(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
+}
 
 void gamePlayScreen() {
     drawImage3(0, 0, GAMEPLAY_WIDTH, GAMEPLAY_HEIGHT, gameplay);
@@ -177,6 +221,16 @@ void waitForVBlank() {
     while(SCANLINECOUNTER > 160);
     while(SCANLINECOUNTER < 160);
 }
+
+void delay(int n)
+{
+    volatile int x = 0;
+    for (int i = 0; i < n * 5000; i++)
+    {
+        x = x + 1;
+    }
+}
+
 
 // int boxCollidePaddle(Rect* box, Rect* paddle) {
 //     if (box->y >= (paddle->y - BOX_HEIGHT)

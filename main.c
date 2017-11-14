@@ -1,8 +1,6 @@
 // Name: HIEU LE
 
 #include "frogs.h"
-#include "rightCar.h"
-#include "leftCar.h"
 #include "myLib.h"
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +35,8 @@ int main() {
     // initBricks(bricks);
     Frog frogger = createFrog(135, 120, FROGGERS_WIDTH, FROGGERS_HEIGHT, GREEN);
     Frog oldFrogger = frogger;
+
+    //int time = 60;
     // Rect box = createRect(120, 100, BOX_WIDTH, BOX_HEIGHT, GREEN);
     // Rect oldBox = box;
 
@@ -88,18 +88,6 @@ int main() {
                 // drawRectangle(138, 120, 7, 7, GREEN);
                 drawImage3(135, 120, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
 
-                // drawImage3(100, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-                // drawImage3(100, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-                // drawImage3(100, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-
-                // drawImage3(115, 12, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
-                // drawImage3(115, 125, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
-                // drawImage3(115, 215, LEFTCARS_WIDTH, LEFTCARS_WIDTH, leftCars);
-
-                // drawImage3(90, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-                // drawImage3(90, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-                // drawImage3(90, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-
                 memcpy(&oldFrogger, &frogger, sizeof(Frog));
                 oldFrogger.color = WHITE;
 
@@ -112,17 +100,22 @@ int main() {
                 }
                 if (KEY_DOWN_NOW(BUTTON_UP)) {
                     setFrogPosition(&frogger, frogger.x - 2, frogger.y);
-                }
+                } 
                 if (KEY_DOWN_NOW(BUTTON_DOWN)) {
                     setFrogPosition(&frogger, frogger.x + 2, frogger.y);
                 }
-                drawImage3(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
-                drawRectangle(135, 0, 240, 10, BLUE);
-                drawImage3(oldFrogger.x, oldFrogger.y, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
 
-                drawImage3(100, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-                drawImage3(100, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
-                drawImage3(100, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+                initLane();
+                fillScreen(0);
+                drawRectangle(0, 0, SCREEN_WIDTH, BAR_HEIGHT, BLUE);
+                drawRectangle(135, 0, SCREEN_WIDTH, BAR_HEIGHT, BLUE);
+                drawImage3(oldFrogger.x, oldFrogger.y, FROGGERS_WIDTH, FROGGERS_HEIGHT, froggers);
+                drawCars();
+                updateCarPos();
+
+                // drawImage3(100, 2, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+                // drawImage3(100, 100, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
+                // drawImage3(100, 220, RIGHTCARS_WIDTH, RIGHTCARS_HEIGHT, rightCars);
 
                 // score++;
                 // sprintf(scoreBuffer, "%d", score);

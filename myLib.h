@@ -101,6 +101,8 @@ extern const unsigned char fontdata_6x8[12288];
 #define FROGGERS_WIDTH 10
 #define FROGGERS_HEIGHT 10
 
+#define BAR_HEIGHT 10
+
 #define COLOR(r, g, b) (r | (g << 5) | (b << 10))
 
 #define BLACK   COLOR(0, 0, 0)
@@ -149,12 +151,15 @@ typedef struct Frog
 } Frog;
 
 typedef struct Vehicle
-{
-	int pos;
+{	
+	int x;
+	int y;
+	int oldX;
+	int oldY;
 	int speed;
+	int left;
+	int right;
 } Vehicle;
-
-
 
 // typedef struct Rect
 // {
@@ -234,4 +239,8 @@ void drawString(int x, int y, char* str, u16 color);
 Frog createFrog(int x, int y, int width, int height, u16 color);
 void setFrogPosition(Frog* frog, int x, int y);
 void drawFrog(Frog frog);
+void initLane();
+void drawCars();
+void updateCarPos();
+
 

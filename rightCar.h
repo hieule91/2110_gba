@@ -1,11 +1,11 @@
 /*
  * Exported with nin10kit v1.7
- * Invocation command was nin10kit --mode=3 --resize=20x17 rightCar rightCars.png 
- * Time-stamp: Friday 11/10/2017, 16:06:23
+ * Invocation command was nin10kit --mode=3 --resize=10x10 rightCar rightCars.png 
+ * Time-stamp: Monday 11/13/2017, 20:57:48
  * 
  * Image Information
  * -----------------
- * rightCars.png 20@17
+ * rightCars.png 10@10
  * 
  * All bug reports / feature requests are to be filed here https://github.com/TricksterGuy/nin10kit/issues
  */
@@ -13,11 +13,11 @@
 #ifndef RIGHTCAR_H
 #define RIGHTCAR_H
 
-extern const unsigned short rightCars[340];
-#define RIGHTCARS_SIZE 680
-#define RIGHTCARS_LENGTH 340
-#define RIGHTCARS_WIDTH 20
-#define RIGHTCARS_HEIGHT 17
+extern const unsigned short rightCars[100];
+#define RIGHTCARS_SIZE 200
+#define RIGHTCARS_LENGTH 100
+#define RIGHTCARS_WIDTH 10
+#define RIGHTCARS_HEIGHT 10
 
 #endif
 
